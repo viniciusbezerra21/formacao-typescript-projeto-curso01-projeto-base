@@ -1,41 +1,31 @@
-let saldo = 0;
-
-const elementoSaldo = document.querySelector('.saldo-valor .valor');
-elementoSaldo.textContent = `R$ ${saldo.toFixed(2)}`;
-
 const elementoFormulario = document.querySelector('.block-nova-transacao form');
-elementoFormulario.addEventListener('submit', function(event) {
+elementoFormulario.addEventListener('submit', function (event) {
     event.preventDefault();
     if (!elementoFormulario.checkValidity()) {
         alert('Por favor, preencha todos os campos corretamente.');
         return;
     }
-
     const inputTipoTransacao = document.querySelector('#tipoTransacao');
     const inputValor = elementoFormulario.querySelector('#valor');
     const inputData = elementoFormulario.querySelector('#data');
-
     let tipoTransacao = inputTipoTransacao.value;
-    let valor = inputValor.value;
-    let data = inputData.value;
-
-    if (tipoTransacao === 'Depósito') {
-        saldo += parseFloat(valor);
-    } else if (tipoTransacao === 'Transferência' || tipoTransacao === 'Pagamento de Boleto') {
-        saldo -= parseFloat(valor);
-    } else {
+    let valor = inputValor.valueAsNumber;
+    let data = new Date(inputData.value);
+    if (tipoTransacao === TipoTransacao.DEPOSITO) {
+        saldo += valor;
+    }
+    else if (tipoTransacao === TipoTransacao.TRASFERENCIA || tipoTransacao === TipoTransacao.PAGAMENTO_BOLETO) {
+        saldo -= valor;
+    }
+    else {
         alert('Tipo de transação inválido.');
         return;
     }
-
-    elementoSaldo.textContent = `R$ ${saldo.toFixed(2)}`;
-
-
+    elementoSaldo.textContent = formatarMoeda(saldo);
     const novaTransacao = {
-        tipo: tipoTransacao,
-        valor: parseFloat(valor),
+        tipoTransacao: tipoTransacao,
+        valor: valor,
         data: data
     };
-
     elementoFormulario.reset();
 });
