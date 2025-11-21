@@ -28,4 +28,5 @@ elementoFormulario.addEventListener('submit', function (event) {
         data: data
     };
     elementoFormulario.reset();
+    exibeHistorico(novaTransacao);
 });

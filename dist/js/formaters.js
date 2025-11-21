@@ -16,5 +16,10 @@ function formatarData(data, formato = FormatoData.PADRAO) {
             month: "2-digit",
         });
     }
+    else if (formato === FormatoData.MES) {
+        return data.toLocaleDateString("pt-BR", {
+            month: "long",
+        });
+    }
     return data.toLocaleDateString("pt-BR");
 }
