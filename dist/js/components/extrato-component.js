@@ -1,4 +1,4 @@
-import Conta from "../components/Conta.js";
+import Conta from "./Conta.js";
 import { FormatoData } from "../types/FormatoData.js";
 import { formatarMoeda, formatarData } from "../utils/formaters.js";
 const elementoRegistroTransacoesExtrato = document.querySelector(".extrato .registro-transacoes");
