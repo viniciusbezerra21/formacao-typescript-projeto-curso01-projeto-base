@@ -1,23 +1,26 @@
-import { GrupoTransacao } from "../types/GrupoTransacao";
+import { GrupoTransacao } from "../types/GrupoTransacao.js";
 import { Transacao } from "../types/Transacao.js";
-import { TipoTransacao } from '../types/TipoTransacao';
+import { TipoTransacao } from "../types/TipoTransacao.js";
+import { Armazenador } from "../types/Armazenador.js";
+import { ValidaDebito, ValidaDeposito } from "../types/Decorators.js";
 
 export class Conta {
-  nome: string;
-  saldo: number = JSON.parse(localStorage.getItem("saldo")) || 0;
-  transacoes: Transacao[] =
-    JSON.parse(
-      localStorage.getItem("transacoes"),
-      (key: string, value: any) => {
-        if (key === "data") {
-          return new Date(value);
-        }
-        return value;
+  protected nome: string;
+  protected saldo: number = Armazenador.obter<number>("saldo") || 0;
+  private transacoes: Transacao[] =
+    Armazenador.obter<Transacao[]>("transacoes", (key: string, value: any) => {
+      if (key === "data") {
+        return new Date(value);
       }
-    ) || [];
+      return value;
+    }) || [];
 
   constructor(nome: string) {
     this.nome = nome;
+  }
+
+  protected getTitular() {
+    return this.nome;
   }
 
   getGruposTransacoes(): GrupoTransacao[] {
@@ -69,28 +72,32 @@ export class Conta {
 
     this.transacoes.push(novaTransacao);
     console.log(this.transacoes);
-    localStorage.setItem("transacoes", JSON.stringify(this.transacoes));
+    Armazenador.salvar("transacoes", JSON.stringify(this.transacoes));
   }
 
-  debitar(valor: number) {
-    if (valor <= 0) {
-      throw new Error("O valor da transação deve ser maior que zero.");
-    }
-    if (valor > this.saldo) {
-      throw new Error("Saldo insuficiente.");
-    }
+  @ValidaDebito
+  private debitar(valor: number) {
     this.saldo -= valor;
-    localStorage.setItem("saldo", JSON.stringify(this.saldo));
+    Armazenador.salvar("saldo", JSON.stringify(this.saldo));
   }
-  depositar(valor: number) {
-    if (valor <= 0) {
-      throw new Error("O valor da transação deve ser maior que zero.");
-    }
+  @ValidaDeposito
+  private depositar(valor: number) {
     this.saldo += valor;
-    localStorage.setItem("saldo", JSON.stringify(this.saldo));
+    Armazenador.salvar("saldo", JSON.stringify(this.saldo));
+  }
+}
+
+export class ContaPremium extends Conta {
+  registrarTransacao(transacao: Transacao): void {
+    if (transacao.tipoTransacao === TipoTransacao.DEPOSITO) {
+      console.log("Ganhou um bonos de 0,50 centavos");
+      transacao.valor += 0.5;
+    }
+    super.registrarTransacao(transacao);
   }
 }
 
 const conta = new Conta("Joana da Silva Oliveira");
+const contaPremium = new ContaPremium("Vinicius Bezerra");
 
 export default conta;

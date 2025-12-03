@@ -4,7 +4,8 @@
     "outDir": "./dist/js/",
     "module": "esnext",
     "rootDir": "./src",
-    "noEmitOnError": true
+    "noEmitOnError": true,
+    "experimentalDecorators": true
   },
   "include": ["./src/**/*"]
 }

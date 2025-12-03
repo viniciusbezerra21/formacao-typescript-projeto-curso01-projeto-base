@@ -2,4 +2,5 @@
     "editor.fontLigatures": true,
     "editor.fontFamily": "Fira Code",
     "terminal.integrated.fontLigatures.enabled": true,
+    "editor.fontSize": 14,
 }
